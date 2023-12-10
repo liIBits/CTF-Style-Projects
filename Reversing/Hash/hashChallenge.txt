@@ -1,0 +1,6 @@
+We found x86 code that was used as a hashing function in x86.txt. Create the equivalent C code from the x86 code, and use it to hash the string "Developing a compiler was a logical move; but in matters like this, you don't run against logic - you run against people who can't change their minds. -Grace Hopper" 
+
+The resulting hash value is the flag.
+
+To help you, starter_code.c is provided as a template to reconstruct the x86 code. When you are done, it should run like so:
+$ ./starter_code "Developing a compiler was a logical move; but in matters like this, you don't run against logic - you run against people who can't change their minds. -Grace Hopper"

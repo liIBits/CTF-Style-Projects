@@ -1,0 +1,87 @@
+0000000000001149 <hash>:
+    1149:	f3 0f 1e fa          	endbr64 
+    114d:	55                   	push   rbp
+    114e:	48 89 e5             	mov    rbp,rsp
+    1151:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi	# move arg into rdp-0x28 (this is already given QWORD PTR = unsigned char *)
+    1155:	66 c7 45 e8 00 00    	mov    WORD PTR [rbp-0x18],0x0	# initialize h to 0 (WORD PTR = unsigned short)
+    115b:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [rbp-0x14],0x0	# initialize another local variable. i?
+    1162:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]	# mov arg into rax
+    1166:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax	# move arg to rbp-0x10 (QWORD PTR = original arg from rdi assuming its also 
+    										  an unsigned char * since its the same size)
+    116a:	eb 5f                	jmp    11cb <hash+0x82>		# This is where the loop starts
+    116c:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]	# places arg into rax
+    1170:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax	# places arg into rbp-0x8 (this variable is used to 
+    										  initialize future argument variables)
+    1174:	8b 45 ec             	mov    eax,DWORD PTR [rbp-0x14]	# moves i value into eax
+    1177:	83 e0 01             	and    eax,0x1				# ANDs i with 1, this is equivalent to checking whether 
+    										  or not i is even or odd
+    117a:	85 c0                	test   eax,eax				# ANDs the result to see if its 0 (even number) or 1 (odd number)
+    117c:	75 22                	jne    11a0 <hash+0x57>		# jumps if not equal to 0 (if its odd), else continue (if its even)
+    117e:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]	# moves arg into rax
+    1182:	0f b7 00             	movzx  eax,WORD PTR [rax]		# move extend the arg to get the last byte and places it into eax
+    1185:	66 89 45 ea          	mov    WORD PTR [rbp-0x16],ax		# moves that last byte into rbp-0x16 as a WORD which is the same as 
+    										  h variable (unsigned short)
+    1189:	0f b7 45 ea          	movzx  eax,WORD PTR [rbp-0x16]	# move extend the byte and place it into eax
+    118d:	66 69 c0 06 19       	imul   ax,ax,0x1906			# multiply 0x1906 to that last byte and place result into ax
+    1192:	66 89 45 ea          	mov    WORD PTR [rbp-0x16],ax		# move the result into rbp-0x16
+    1196:	0f b7 45 ea          	movzx  eax,WORD PTR [rbp-0x16]	# move extend the result into eax to get the last byte
+    119a:	66 31 45 e8          	xor    WORD PTR [rbp-0x18],ax		# xor the last byte with h and place result in h
+    119e:	eb 22                	jmp    11c2 <hash+0x79>		# jmp back to beginning of for loop to check if end is reached
+    11a0:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]	# start of odd i variable, move the arg in rap-0x8 into rax
+    11a4:	0f b6 00             	movzx  eax,BYTE PTR [rax]		# move extend to get the last byte in rax and place it in eax; 
+    										  this time its a byte PTR which I assume its unsigned char *
+    11a7:	88 45 e7             	mov    BYTE PTR [rbp-0x19],al		# move that last byte into rbp-0x19
+    11aa:	0f b6 55 e7          	movzx  edx,BYTE PTR [rbp-0x19]	# place that last byte into edx
+    11ae:	89 d0                	mov    eax,edx				# moves that byte into eax
+    11b0:	c1 e0 03             	shl    eax,0x3				# shift the byte value left (value << 3)
+    11b3:	01 d0                	add    eax,edx				# add the shifted value to the value it was before it was shifted 
+    										  and place in eax
+    11b5:	01 c0                	add    eax,eax				# add the value to itself and place back into eax
+    11b7:	88 45 e7             	mov    BYTE PTR [rbp-0x19],al		# move the new value of al into rbp-0x19
+    11ba:	0f b6 45 e7          	movzx  eax,BYTE PTR [rbp-0x19]	# move the new value into eax
+    11be:	66 31 45 e8          	xor    WORD PTR [rbp-0x18],ax		# xor the the ax register with h and place the value in h
+    11c2:	83 45 ec 01          	add    DWORD PTR [rbp-0x14],0x1	# add 1 to i
+    11c6:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1	# add 1 to arg original arg that was placed at rbp-0x10 
+    										  (this shifts the string to the right to get the next letter)
+    11cb:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]	# moves the argument back into rax
+    11cf:	0f b6 00             	movzx  eax,BYTE PTR [rax]		# move extend to check the last byte of rax
+    11d2:	84 c0                	test   al,al				# check to see if its 0
+    11d4:	75 96                	jne    116c <hash+0x23>		# if its not 0 it'll continue the loop
+    11d6:	0f b7 45 e8          	movzx  eax,WORD PTR [rbp-0x18]	# move extend h and then return to main with this value in eax
+    11da:	5d                   	pop    rbp
+    11db:	c3                   	ret 
+
+
+For loop that take an argument and loop through until it hits 0, adding 1 to i and the argument
+ex: For (int i = 0; arg[i] != 0; i++)
+
+ANDs the operation to check if even or odd
+Ex:
+If (i AND 1)					if (i % 2 ==0)
+{						{
+	//do something odd				//do something even
+}					or	}
+Else						else
+{						{
+	//do something even				//do something odd
+}						}
+
+If even, Multiply the arg[i] by 0x1906 and save the product. Xor the product with h and place the result in h
+Ex: h ^= arg[i] * 0x1906
+
+If odd, place the value in both rax and edx (have to create another local variable)and shift left eax and add the value to rax. Then add the eax to itself and place the value in eax. Xor the value with h and place the result in h
+Ex: rax = arg[i]... char c = arg[i]; h ^= 2(c << 3) + arg[i])
+
+
+Add 1 to i
+Add 1 to arg (rbp-0x10)
+
+Return h
+
+Rbp-0x10 was created at the beginning as a qword, so Im adding it as a char variable equal to arg[i] since rdi was placed in a qword so I'm assuming their the same. This is the same variable thats changing throughout the loop
+Each part of the loop has different sizes for the arg[i], the first part is a word(which is the same as the the h variable) so I know that's an unsigned short.
+The second part of the loop saves the argument as a byte ptr which I assume is a char ptr.
+
+Continue with the operations as previously discussed, but replacing arg[i] with a local variable; unsigned short for even and unsigned char for odd.
+
+

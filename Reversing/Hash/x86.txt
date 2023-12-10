@@ -1,0 +1,48 @@
+hash:
+	push   rbp
+    	mov    rbp,rsp
+	mov    QWORD [rbp-0x28],rdi
+	mov    WORD [rbp-0x18],0x0		
+	mov    DWORD [rbp-0x14],0x0		
+	mov    rax,QWORD [rbp-0x28]
+	mov    QWORD [rbp-0x10],rax
+	jmp    hash1
+hash4:	
+	mov    rax,QWORD [rbp-0x10]
+ 	mov    QWORD [rbp-0x8],rax
+	mov    eax,DWORD [rbp-0x14]
+	and    eax,0x1
+	test   eax,eax
+	jne    hash3
+	mov    rax,QWORD [rbp-0x8]
+	movzx  eax,WORD [rax]
+	mov    WORD [rbp-0x16],ax
+	movzx  eax,WORD [rbp-0x16]
+ 	imul   ax,ax,0x1906
+	mov    WORD [rbp-0x16],ax
+	movzx  eax,WORD [rbp-0x16]
+	xor    WORD [rbp-0x18],ax
+	jmp    hash2
+hash3:
+	mov    rax,QWORD [rbp-0x8]
+	movzx  eax,BYTE [rax]
+	mov    BYTE [rbp-0x19],al
+ 	movzx  edx,BYTE [rbp-0x19]
+	mov    eax,edx
+	shl    eax,0x3
+	add    eax,edx
+	add    eax,eax
+	mov    BYTE [rbp-0x19],al
+	movzx  eax,BYTE [rbp-0x19]
+	xor    WORD [rbp-0x18],ax
+hash2:
+	add    DWORD [rbp-0x14],0x1
+	add    QWORD [rbp-0x10],0x1
+hash1:
+	mov    rax,QWORD [rbp-0x10]
+	movzx  eax,BYTE [rax]
+	test   al,al
+	jne    hash4
+	movzx  eax,WORD [rbp-0x18]
+	pop    rbp
+	ret 

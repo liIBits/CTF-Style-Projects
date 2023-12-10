@@ -1,0 +1,2 @@
+I see that this binary might have a little birdie nesting in it. Can you figure out how to get past it to get to the flag?
+Connect to cweaccessionsctf.com:1350.
