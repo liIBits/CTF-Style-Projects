@@ -1,4 +1,4 @@
-...
+---
 title: "CWE Challenge - Shell"
 author: Michael Mendoza
 date: "2023-01-20"
@@ -19,14 +19,14 @@ titlepage-background: "./images/titlePage.jpeg"
 We can see here that we are working with a 32-bit binary with all the defense mechanisms turned off!
 
 ![Information](./images/info.png)
-\ **Figure 1:** Information about the binary
+ **Figure 1:** Information about the binary
 
 ## Ghidra
 
 After observing the main function we can see a read_in function that has the vulnerability we are looking for.
 
 ![Ghidra](./images/read_in.png)
-\ **Figure 2:** Read_In Function
+ **Figure 2:** Read_In Function
  
 On the right side of Ghidra, we can see the decompiled read_in function showing that there is a buf variable with 44 bytes allocated to it, but the read function reads in 0x90 bytes; this is where the buffer overflow vulnerability is located. On the left side we can see that the buf variable is at an offset of 0x38.
  
@@ -40,12 +40,12 @@ So there's 2 ways I want to show that this binary could be exploited. The first 
 The goal we need to accomplish here is to somehow jump to, return to, or even call the stack pointer to run the shell code! We can accomplish this using ROP Gadgets. To find the right one, we use ropper and see the following output.
 
 ![ROP](./images/ropper.png)
-\ **Figure 3:** ROP Gadgets Available
+ **Figure 3:** ROP Gadgets Available
  
 Ideally, finding a "jmp esp" or "call esp" or even a "push esp; ret" would be nice, but there are not many options. We do see one ROP instruction that pushes esp onto the stack, does a couple of other things and then returns, which theoretically should still work.
 
 ![ROP](./images/gadgetFound.png)
-\ **Figure 4:** ROP Gadgets Found
+ **Figure 4:** ROP Gadgets Found
 
 
 We can use shellcraft in our python script to create the shell code necessary to give us a shell. We create a buffer of 0x38 bytes which we saw was the offset earlier in Ghidra and overwrite the instruction pointer to return to the gadget we found.
@@ -86,22 +86,22 @@ And BOOM! Our gadget worked.
 To find the offset that we need for this exploit, we set a break point after the read function is called so we can see what the stack frame looks like when we send our payload. 
 
 ![Leaked](./images/read_inGDB.png)
-\ **Figure 6:** GDB read_in function
+ **Figure 6:** GDB read_in function
 
 run the program to get the leaked address
 
 ![Leaked](./images/leakedAddress.png)
-\ **Figure 7:** Leaked Address
+ **Figure 7:** Leaked Address
 
 Here we see the leaked address is 0xffffd0c4. Now to view what the stack frame looks like at the time you send the payload.
 
 ![Leaked](./images/stackFrame.png)
-\ **Figure 8:** Stack Frame
+ **Figure 8:** Stack Frame
 
 Here we can see that the previous frame's sp is 0xffffd100. This is where we want to calculate our offset to. After doing some quick math.
 
 ![Leaked](./images/quickMath.png)
-\ **Figure 9:** Quick Math
+ **Figure 9:** Quick Math
 
 So now we can see that adding 0x3c to the leaked address will return us to where our shell code is.
 
@@ -152,7 +152,7 @@ p.interactive()
 ## Flag
 
 ![Flag](./images/leakedExploit.png)
-\ **Figure 10:** Running the Exploit
+ **Figure 10:** Running the Exploit
 
 # Conclusion
 This challenge was solvable by understanding how to create the payload and knowing where to return to. The need to return to the stack pointer to find our exploit was key in solving this problem.
