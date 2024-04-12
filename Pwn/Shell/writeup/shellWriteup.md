@@ -12,7 +12,7 @@ titlepage-text-color: "FFFFFF"
 toc: true
 toc-own-page: true
 titlepage-background: "./images/titlePage.jpeg"
-...
+---
 
 # Information Gathering
 
