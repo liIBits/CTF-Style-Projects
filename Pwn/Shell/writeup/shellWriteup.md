@@ -40,7 +40,7 @@ So there's 2 ways I want to show that this binary could be exploited. The first 
 The goal we need to accomplish here is to somehow jump to, return to, or even call the stack pointer to run the shell code! We can accomplish this using ROP Gadgets. To find the right one, we use ropper and see the following output.
 
 ![ROP](./images/ropper.png)
- **Figure 3:** ROP Gadgets Available
+**Figure 3:** ROP Gadgets Available
  
 Ideally, finding a "jmp esp" or "call esp" or even a "push esp; ret" would be nice, but there are not many options. We do see one ROP instruction that pushes esp onto the stack, does a couple of other things and then returns, which theoretically should still work.
 
